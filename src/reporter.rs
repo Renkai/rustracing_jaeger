@@ -153,10 +153,12 @@ impl JaegerReporter {
         };
         let message = Message::from(agent::EmitBatchNotification { batch });
         let bytes = track!(encode(message))?;
-        track!(self
-            .socket
-            .send_to(&bytes, self.agent)
-            .map_err(error::from_io_error))?;
+        self.socket.connect(self.agent);
+        self.socket.send(&bytes);
+        // track!(self
+        //     .socket
+        //     .send_to(&bytes, self.agent)
+        //     .map_err(error::from_io_error))?;
         Ok(())
     }
 }
